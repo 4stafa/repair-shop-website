@@ -1,0 +1,12 @@
+# dependencies
+node_modules/
+
+# env & secrets
+.env
+.env.local
+.env.*.local
+
+# misc
+.DS_Store
+
+
