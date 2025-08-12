@@ -6,6 +6,8 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 app.use(cors());
 app.use(express.json());
 
