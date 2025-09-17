@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";   // 👈 import Link
 import api from "../lib/api";
 
 export default function Register() {
@@ -20,13 +21,40 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={onSubmit} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow">
+      <form
+        onSubmit={onSubmit}
+        className="w-full max-w-sm bg-white p-6 rounded-2xl shadow"
+      >
         <h1 className="text-xl font-semibold mb-4">Register</h1>
         {msg && <div className="text-sm mb-3">{msg}</div>}
-        <input className="input mb-3" placeholder="Username" value={username} onChange={e=>setUsername(e.target.value)} />
-        <input className="input mb-3" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
-        <input className="input mb-4" placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} />
+        <input
+          className="input mb-3"
+          placeholder="Username"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+        />
+        <input
+          className="input mb-3"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          className="input mb-4"
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
         <button className="btn w-full">Sign up</button>
+
+        {/* 👇 Add this for navigation */}
+        <p className="text-sm mt-3 text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+        </p>
       </form>
     </div>
   );
