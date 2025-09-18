@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
 import Layout from "../components/_Layout";
+import Section from "../components/ui/Section";
+import Card from "../components/ui/Card";
 import { logout } from "../store/auth";
 
 type Order = {
@@ -27,7 +29,12 @@ export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
-    title: "", customerName: "", device: "", issue: "", price: "" as number | string, notes: ""
+    title: "",
+    customerName: "",
+    device: "",
+    issue: "",
+    price: "" as number | string,
+    notes: "",
   });
   const [err, setErr] = useState("");
 
@@ -38,14 +45,16 @@ export default function Orders() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function createOrder(e: React.FormEvent) {
     e.preventDefault();
     setErr("");
     try {
       await api.post("/api/orders", { ...form, price: Number(form.price || 0) });
-      setForm({ title:"", customerName:"", device:"", issue:"", price:"", notes:"" });
+      setForm({ title: "", customerName: "", device: "", issue: "", price: "", notes: "" });
       load();
     } catch (e: any) {
       setErr(e?.response?.data?.message || "Create failed");
@@ -64,82 +73,116 @@ export default function Orders() {
 
   return (
     <Layout>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="page-title">Repair Orders</h1>
-        <button onClick={logout} className="btn-secondary">Logout</button>
-      </div>
-
-      {/* Create Order */}
-      <div className="card mb-8">
-        <h2 className="card-title">Create a new order</h2>
-        {err && <div className="alert-error">{err}</div>}
-        <form onSubmit={createOrder} className="grid grid-cols-1 md:grid-cols-6 gap-3">
-          <input className="input md:col-span-2" placeholder="Title"
-            value={form.title} onChange={e=>setForm({...form, title:e.target.value})} />
-          <input className="input md:col-span-2" placeholder="Customer name"
-            value={form.customerName} onChange={e=>setForm({...form, customerName:e.target.value})} />
-          <input className="input md:col-span-2" placeholder="Device"
-            value={form.device} onChange={e=>setForm({...form, device:e.target.value})} />
-          <input className="input md:col-span-4" placeholder="Issue"
-            value={form.issue} onChange={e=>setForm({...form, issue:e.target.value})} />
-          <input className="input" placeholder="Price" type="number"
-            value={form.price} onChange={e=>setForm({...form, price:e.target.value})} />
-          <input className="input md:col-span-5" placeholder="Notes (optional)"
-            value={form.notes} onChange={e=>setForm({...form, notes:e.target.value})} />
-          <div className="md:col-span-6">
-            <button className="btn">Create order</button>
+      <Section>
+        {/* Page header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Repair Orders</h1>
+            <p className="mt-1 text-slate-600">Create, track and update your repair jobs.</p>
           </div>
-        </form>
-      </div>
-
-      {/* Orders list */}
-      {loading ? (
-        <div className="card">Loading…</div>
-      ) : orders.length === 0 ? (
-        <div className="card">No orders yet.</div>
-      ) : (
-        <div className="overflow-x-auto card p-0">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
-              <tr>
-                <th className="th">Title</th>
-                <th className="th">Customer</th>
-                <th className="th">Device</th>
-                <th className="th">Issue</th>
-                <th className="th">Status</th>
-                <th className="th text-right">Price</th>
-                <th className="th"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map(o => (
-                <tr key={o._id} className="border-t">
-                  <td className="td font-medium">{o.title}</td>
-                  <td className="td">{o.customerName}</td>
-                  <td className="td">{o.device}</td>
-                  <td className="td">{o.issue}</td>
-                  <td className="td">
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[o.status]}`}>
-                      {o.status.replace("_"," ")}
-                    </span>
-                  </td>
-                  <td className="td text-right">${o.price}</td>
-                  <td className="td">
-                    <div className="flex gap-2 justify-end">
-                      <button className="btn" onClick={() => toInProgress(o._id)}>
-                        Mark In Progress
-                      </button>
-                      <button className="btn-danger" onClick={() => remove(o._id)}>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <button onClick={logout} className="btn-secondary">Logout</button>
         </div>
-      )}
+
+        {/* Create Order */}
+        <Card className="mb-8">
+          <h2 className="text-lg font-semibold">Create a new order</h2>
+          {err && <div className="mt-3 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{err}</div>}
+
+          <form onSubmit={createOrder} className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-6">
+            <input
+              className="input md:col-span-2"
+              placeholder="Title"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+            />
+            <input
+              className="input md:col-span-2"
+              placeholder="Customer name"
+              value={form.customerName}
+              onChange={(e) => setForm({ ...form, customerName: e.target.value })}
+            />
+            <input
+              className="input md:col-span-2"
+              placeholder="Device"
+              value={form.device}
+              onChange={(e) => setForm({ ...form, device: e.target.value })}
+            />
+            <input
+              className="input md:col-span-4"
+              placeholder="Issue"
+              value={form.issue}
+              onChange={(e) => setForm({ ...form, issue: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Price"
+              type="number"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+            />
+            <input
+              className="input md:col-span-5"
+              placeholder="Notes (optional)"
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
+            <div className="md:col-span-6">
+              <button className="btn">Create order</button>
+            </div>
+          </form>
+        </Card>
+
+        {/* Orders list */}
+        {loading ? (
+          <Card>Loading…</Card>
+        ) : orders.length === 0 ? (
+          <Card>No orders yet.</Card>
+        ) : (
+          <Card className="p-0 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="th">Title</th>
+                  <th className="th">Customer</th>
+                  <th className="th">Device</th>
+                  <th className="th">Issue</th>
+                  <th className="th">Status</th>
+                  <th className="th text-right">Price</th>
+                  <th className="th"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((o) => (
+                  <tr key={o._id} className="border-t">
+                    <td className="td font-medium">{o.title}</td>
+                    <td className="td">{o.customerName}</td>
+                    <td className="td">{o.device}</td>
+                    <td className="td">{o.issue}</td>
+                    <td className="td">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[o.status]}`}
+                      >
+                        {o.status.replace("_", " ")}
+                      </span>
+                    </td>
+                    <td className="td text-right">${o.price}</td>
+                    <td className="td">
+                      <div className="flex justify-end gap-2">
+                        <button className="btn" onClick={() => toInProgress(o._id)}>
+                          Mark In Progress
+                        </button>
+                        <button className="btn-danger" onClick={() => remove(o._id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        )}
+      </Section>
     </Layout>
   );
 }
